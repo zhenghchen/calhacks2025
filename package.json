@@ -13,6 +13,8 @@
     "@supabase/supabase-js": "^2.76.1",
     "next": "16.0.0",
     "nuqs": "^2.7.2",
+    "@anthropic-ai/sdk": "^0.67.0",
+    "dotenv": "^17.2.3",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },

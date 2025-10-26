@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { verificationAgent, VerificationResult } from './verificationAgent.js';
 
 // Matches Supabase schema
 interface QuantitativeAnalysis {
@@ -40,7 +41,8 @@ export interface DueDiligenceAnalysis {
   quantitativeAnalysis: QuantitativeAnalysis;
   qualitativeAnalysis: QualitativeAnalysis;
   strategicAnalysis: StrategicAnalysis;
-  // Final decision (all 3 agents must pass)
+  verificationAnalysis: VerificationResult;
+  // Final decision (all 4 agents must pass)
   accept: boolean;
 }
 
@@ -227,7 +229,7 @@ export async function analyzeCompletedCall(transcript: string): Promise<DueDilig
   console.log('🎯 Starting multi-agent due diligence analysis...');
   
   try {
-    // Run all three agents IN PARALLEL for maximum efficiency
+    // Run first three agents IN PARALLEL for maximum efficiency
     const [quantAnalysis, qualAnalysis, stratAnalysis] = await Promise.all([
       quantitativeAgent(transcript).then(result => {
         console.log('✅ Quantitative Agent completed');
@@ -243,13 +245,27 @@ export async function analyzeCompletedCall(transcript: string): Promise<DueDilig
       })
     ]);
 
-    console.log('🎉 All agents completed successfully');
+    console.log('🎉 Analysis agents completed successfully');
 
-    // Final decision: ALL 3 agents must pass
+    // Now run verification agent with extracted founder info
+    console.log('🔍 Starting verification via MCP...');
+    const verificationResult = await verificationAgent(transcript, {
+      founder_name: quantAnalysis.founder_name || undefined,
+      company: quantAnalysis.industry || undefined, // Use industry as proxy if no company name
+      school: qualAnalysis.pedigree || undefined,
+      pedigree: qualAnalysis.pedigree || undefined,
+      social_capital: qualAnalysis.social_capital || undefined,
+    });
+    console.log('✅ Verification Agent completed');
+
+    console.log('🎉 All 4 agents completed successfully');
+
+    // Final decision: ALL 4 agents must pass
     const accept = 
       quantAnalysis.verdict === 'PASS' && 
       qualAnalysis.verdict === 'PASS' && 
-      stratAnalysis.verdict === 'PASS';
+      stratAnalysis.verdict === 'PASS' &&
+      verificationResult.verdict === 'PASS';
 
     console.log(`📋 Final Decision: ${accept ? '✅ ACCEPT' : '❌ REJECT'}`);
 
@@ -257,6 +273,7 @@ export async function analyzeCompletedCall(transcript: string): Promise<DueDilig
       quantitativeAnalysis: quantAnalysis,
       qualitativeAnalysis: qualAnalysis,
       strategicAnalysis: stratAnalysis,
+      verificationAnalysis: verificationResult,
       accept
     };
 

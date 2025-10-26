@@ -101,13 +101,23 @@ async function runTest() {
     console.log(`Verdict: ${result.strategicAnalysis.verdict}`);
     console.log(`Reasoning: ${result.strategicAnalysis.reasoning}\n`);
     
+    console.log('🔍 VERIFICATION ANALYSIS (via MCP):');
+    console.log('-'.repeat(80));
+    console.log(`Verified: ${result.verificationAnalysis.verified ? '✅ YES' : '❌ NO'}`);
+    console.log(`Confidence: ${result.verificationAnalysis.confidence.toUpperCase()}`);
+    console.log(`Sources Found: ${result.verificationAnalysis.sources_found}`);
+    console.log(`Details: ${result.verificationAnalysis.details}`);
+    console.log(`Reasoning: ${result.verificationAnalysis.reasoning}`);
+    console.log(`Verdict: ${result.verificationAnalysis.verdict}\n`);
+    
     console.log('='.repeat(80));
     console.log('📋 FINAL COMMITTEE VERDICT:');
     console.log('='.repeat(80));
-    console.log(`Quant: ${result.quantitativeAnalysis.verdict}`);
-    console.log(`Qual:  ${result.qualitativeAnalysis.verdict}`);
-    console.log(`Strat: ${result.strategicAnalysis.verdict}`);
-    console.log(`\n🏆 FINAL DECISION: ${result.accept ? '✅ ACCEPT - All 3 agents passed!' : '❌ REJECT - Not all agents passed'}\n`);
+    console.log(`Quant:        ${result.quantitativeAnalysis.verdict}`);
+    console.log(`Qual:         ${result.qualitativeAnalysis.verdict}`);
+    console.log(`Strat:        ${result.strategicAnalysis.verdict}`);
+    console.log(`Verification: ${result.verificationAnalysis.verdict}`);
+    console.log(`\n🏆 FINAL DECISION: ${result.accept ? '✅ ACCEPT - All 4 agents passed!' : '❌ REJECT - Not all agents passed'}\n`);
     
     console.log('='.repeat(80));
     console.log('✅ TEST COMPLETED SUCCESSFULLY');
@@ -117,6 +127,11 @@ async function runTest() {
     console.error('\n❌ TEST FAILED:');
     console.error(error);
     process.exit(1);
+  } finally {
+    // Ensure clean exit
+    setTimeout(() => {
+      process.exit(0);
+    }, 1000);
   }
 }
 

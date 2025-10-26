@@ -30,6 +30,7 @@ export interface Company {
   revenue?: number; // DECIMAL(15, 2)
   values?: string;
   accept: boolean;
+  amount_raised?: number; // DECIMAL(15, 2)
   investor_id?: string; // UUID - references investors(id)
   founder_id?: string; // UUID - references founders(id)
   created_at: string; // timestamp with time zone

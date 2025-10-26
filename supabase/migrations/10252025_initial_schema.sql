@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS companies (
     accept boolean default false,
     investor_id UUID REFERENCES investor(id) ON DELETE SET NULL,
     founder_id UUID REFERENCES founder(id) ON DELETE SET NULL,
+    amount_raised DECIMAL(15, 2),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
